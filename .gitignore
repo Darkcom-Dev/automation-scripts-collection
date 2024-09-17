@@ -1,5 +1,7 @@
 __pycache__/
 venv/
+Solo_archivos/
+"Solo Carpetas"/
 *.png
 *.txt
 *.pdf

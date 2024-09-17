@@ -16,11 +16,48 @@ def clean_name(name):
 
     Returns:
         str: The cleaned filename.
+
+    >>> clean_name("  hello world.txt  ")
+    'hello world.txt'
+    >>> clean_name("hello_world.txt")
+    'hello_world.txt'
+    >>> clean_name("hello-world.txt")
+    'hello-world.txt'
+    >>> clean_name("hello*world.txt")
+    'hello_world.txt'
+    >>> clean_name("hello world.txt")
+    'hello world.txt'
+    >>> clean_name("hello+world.txt")
+    'hello_world.txt'
+    >>> clean_name("hello world?.txt")
+    'hello world.txt'
+    >>> clean_name("   ") # Esto es un fallo
+    '_no_name_'
+    >>> clean_name("") # Esto es un fallo
+    '_no_name_'
+    >>> clean_name(" hello.txt")
+    'hello.txt'
+    >>> clean_name("CON")
+    'CON_is_not_allowed_in_windows'
     """
+    # Nombres de carpetas prohibidos en Windows
+    forbidden_folders = ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9']
+    # Reemplaza los nombres de carpetas prohibidos con un guion bajo
+    if name in forbidden_folders:
+        name = name + '_is_not_allowed_in_windows'
+
+    # Define los caracteres no permitidos
+    forbidden_chars = '<>:"/\\|?*+'
+    # Reemplaza los caracteres no permitidos con un guion bajo
+    for char in forbidden_chars:
+        name = name.replace(char, '_')
+
     # Elimina los espacios al inicio y al final del nombre
     name = name.strip()
     # Elimina los espacios, guiones bajos y guiones antes de la extension
     name = name.replace(' .', '.').replace('_.', '.').replace('-.', '.')
+    if name == '':
+        name = '_no_name_'
     return name
 
 def camel_to_kebab(name):
@@ -32,9 +69,27 @@ def camel_to_kebab(name):
 
     Returns:
         str: The kebab-case filename.
+
+    >>> camel_to_kebab("helloWorld")
+    'hello-world'
+    >>> camel_to_kebab("HelloWorld")
+    'hello-world'
+    >>> camel_to_kebab("hello_world")
+    'hello_world'
+    >>> camel_to_kebab("hello-world")
+    'hello-world'
+    >>> camel_to_kebab("helloWorld123")
+    'hello-world-123'
+    >>> camel_to_kebab("hello")
+    'hello'
+    >>> camel_to_kebab("")
+    ''
     """    
+    
     # Buscar las transiciones de camelCase y separarlas con un guion
     kebab_case_name = re.sub(r'([a-z0-9])([A-Z])', r'\1-\2', name)
+    # Busca las transiciones de letras a numeros y los separa con un guion
+    kebab_case_name = re.sub(r'([a-zA-Z])([0-9])', r'\1-\2', kebab_case_name.strip())
     # Convertir a minúsculas
     return kebab_case_name.lower()
 
@@ -51,6 +106,23 @@ def normalize_name(name, snake_case=False):
 
     Returns:
         str: The normalized name.
+
+    >>> normalize_name("texto con espacio", snake_case=False)
+    'texto-con-espacio'
+    >>> normalize_name("texto con espacio convertido a snake case", snake_case=True)
+    'texto_con_espacio_convertido_a_snake_case'
+    >>> normalize_name("texto-en-kebab-case", snake_case=True)
+    'texto_en_kebab_case'
+    >>> normalize_name("texto_con_guiones_bajos", snake_case=False)
+    'texto-con-guiones-bajos'
+    >>> normalize_name("texto_con_guiones_bajos_convertido_a_snake_case", snake_case=True)
+    'texto_con_guiones_bajos_convertido_a_snake_case'
+    >>> normalize_name("hello")
+    'hello'
+    >>> normalize_name("")
+    ''
+    >>> normalize_name("hello.txt")
+    'hello.txt'
     """
     # Reemplazar espacios y guiones por guiones bajos
     
@@ -76,6 +148,7 @@ def rename_if_necessary(original_path, new_path, item_type):
 
     Returns:
         None
+
     """
     if original_path == new_path:
         print(f'El {item_type}: \033[33m{original_path}\033[0m ya cumple con la convención')
@@ -96,7 +169,24 @@ def generate_new_name(original_name, snake_case_extensions=None):
 
     Returns:
         str: The new name following the specified conventions.
+
+    >>> generate_new_name("hello world.txt", snake_case_extensions=('.py','.cpp','.rs'))
+    'hello-world.txt'
+    >>> generate_new_name("hello world.rs", snake_case_extensions=('.py','.cpp','.rs'))
+    'hello_world.rs'
+    >>> generate_new_name("hello-world-folder")
+    'hello-world-folder'
+    >>> generate_new_name("hello world folder")
+    'hello-world-folder'
+    >>> generate_new_name("")
+    '-no-name-'
     """
+    """
+    >>> generate_new_name("hello?.txt")
+    'hello_.txt'
+    
+    """
+
     original_name = clean_name(original_name)
     original_name = camel_to_kebab(original_name)
 
@@ -155,6 +245,10 @@ def rename_files_and_folders(directory):
             rename_if_necessary(original_dir_path, new_dir_path, 'carpeta')
 
 if __name__ == "__main__":
+    import doctest
+
+    #doctest.run_docstring_examples(generate_new_name, globals(), verbose=True)
+     
     # Especifica el directorio que deseas renombrar
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", help="Directorio que deseas renombrar")
@@ -165,7 +259,7 @@ if __name__ == "__main__":
         exit(1)
     else:
         rename_files_and_folders(args.directory)
-
+ 
 """
 project_convention_renamer.py version 1.1
 
