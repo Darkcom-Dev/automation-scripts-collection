@@ -1,5 +1,10 @@
-import re
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
+import re
+import subprocess
+import os
+import argparse
 
 def python(text):
     """
@@ -20,12 +25,12 @@ def python(text):
 
     ]
 
-    reservadas = ['elif ', 'if ', 'else:', 'while ', 'for ', 'def ', 'class ', 'try ', 'except ', 'finally:', 'return ']
+    # reservadas = 
 
     for patron, reemplazo in formatos:
         text = re.sub(patron, reemplazo, text)
 
-    for palabra in reservadas:
+    for palabra in ['elif ', 'if ', 'else:', 'while ', 'for ', 'def ', 'class ', 'try ', 'except ', 'finally:', 'with ', 'return ', 'from', 'import ']:
         text = text.replace(palabra, f'\x1b[1;34m{palabra}\x1b[0m')
 
     return text
@@ -65,49 +70,38 @@ def markdown(text):
     else:
         return ("Text is not a string")
 
-def main():
-    
-    text2 = '''
-    # Esto es un titulo
-
-    esto es un ** texto en negrita ** y continua el texto con 
-    *texto en cursiva * y luego continua el texto con `código`
-    Agreguemos otro ** texto en negrita ** y * texto en cursiva * y
-    otro ` texto en codigo`. A continuacion ~~ texto en tachado ~~ y luego
-    una línea nueva
-
-    - lista no numerada
-    - lista numerada
-
-    1. lista numerada
-    2. lista numerada
-    3. lista numerada
-
-    ## Subtitulo
-
-    por cierto me falto un __texto en subrayado__
-        texto tabulado
-    '''
-
-    text = """
-        # Esto es un comentario
-        ''' Esto es un comentario '''
-        'Esto es un string'
-
-        elif True:
-            print('hola')
-        else:
-            print('adios')
-
-        if else: elif for while class try except return finally: def 
+def main(path):
     """
+    This function reads a file based on the provided path, 
+    applies syntax highlighting if the file is a Python or Markdown file, 
+    and then pipes the output to the 'less' command for viewing.
 
-    mark = markdown(text2)
-    python_result = python(text)
-    print(mark)
-    print(python_result)
+    Parameters:
+        path (str): The path to the file to be read.
+
+    Returns:
+        int: The exit status of the function, which is always 0.
+    """
+    file_path = os.path.join(os.path.dirname(__file__), path)
+    extension = os.path.splitext(file_path)[1]
+    print(f'File: {file_path}')
+    text = ""
+    with open(file_path, 'r') as f:
+        if extension == '.py':
+            text = python(f.read())
+        elif extension == '.md':
+            text = markdown(f.read())
+        else:
+            text = f.read()
+    
+    process = subprocess.Popen(['less', '-R'], stdin=subprocess.PIPE)
+    process.communicate(input=text.encode('utf-8'))
 
     return 0
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('path', help='Path to the file')
+    parser.description = 'Highlighter'
+    args = parser.parse_args()
+    main(args.path)
