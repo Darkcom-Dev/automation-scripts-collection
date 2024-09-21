@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 from PIL import Image
 from tkinter import ttk
@@ -6,7 +7,35 @@ import tkinter as tk
 from tkinter.filedialog import askopenfilename
 import argparse
 
-def merge_channels(size:int, routes, save_filename):
+def propose_name(channel, coincidences_list):
+    """
+    Proposes a name for a channel based on a list of coincidences.
+
+    Args:
+        channel (str): The original channel name.
+        coincidences_list (list): A list of possible coincidences.
+
+    Returns:
+        str: The proposed name, either the original channel name or a coincidence.
+    >>> propose_name('blue', ['blues', 'blue', 'blu'])
+    'blue'
+    >>> propose_name('rock_Emission', ['emission', 'emissive'])
+    'emission'
+    >>> propose_name('rock_Gloss', ['rough', 'roughness', 'gloss'])
+    'gloss'
+    >>> propose_name('rockao', ['ambient occlusion', 'specular', 'ao'])# Esto es un fallo
+    'ao'
+    """
+    if coincidences_list == []:
+        return channel
+    else:
+        for coincidence in coincidences_list:
+            if channel.lower().find(coincidence) != -1:
+                return coincidence
+        return channel
+
+
+def merge_channels(size:int = 512, red='', green='', blue='', alpha='', save_filename=''):
     """
     Merges channels of images into a single RGBA image and saves it as a PNG file.
 
@@ -24,15 +53,22 @@ def merge_channels(size:int, routes, save_filename):
 
     images = []
 
-    for i in range(0,4):
-        if routes[i] == '':
+    for channel in (red,green,blue,alpha):
+        if channel == '':
             images.append(Image.new('L',[size,size],'white'))
         else:
-            img = Image.open(routes[i],'r')
+            img = Image.open(channel,'r')
             images.append(img.getchannel(0).resize([size,size]))
     
     result = Image.merge('RGBA',images)
-    result.save(save_filename,'png')
+    if save_filename == '':
+        r = 'r-'+ propose_name(red,['rough','roughness','gloss'])
+        g = 'g-'+ propose_name(green,['heigh','metal'])
+        b = 'b-'+ propose_name(blue,['ao','specular'])
+        a = 'a-'+ propose_name(alpha,['alpha','emission', 'emissive'])
+        result.save(f'-{r}-{g}-{b}-{a}-{size}','png')
+    else:
+        result.save(save_filename,'png')
     result.show()
 
 class App():
@@ -57,7 +93,7 @@ class App():
         instructions1 = ttk.Label(self.win,text='** Se creará un canal blanco por cada ruta faltante')
         instructions1.grid(column= 0,row= 11, sticky='WE', columnspan=2)
 
-        filetypes = [('Texture files',r'*.png *.tif'),('All files',r'*.*')]
+        filetypes = [('Texture files',r'*.png *.tif *.jpg'),('All files',r'*.*')]
         # Canal R
 
         r_filename = tk.StringVar()
@@ -114,18 +150,17 @@ def main():
     root.mainloop()
 
 if __name__ == '__main__':
-    parser.add_argument('-r', type=str)
-    parser.add_argument('-g', type=str)
-    parser.add_argument('-b', type=str)
-    parser.add_argument('-a', type=str)
-    parser.add_argument('-o', type=str)
-    parser.add_argument('-s', type=int)
+
+    parser.add_argument('-r', '--red', type=str, help='Path to the file for R channel')
+    parser.add_argument('-g', '--green',type=str, help='Path to the file for G channel')
+    parser.add_argument('-b', '--blue',type=str, help='Path to the file for B channel')
+    parser.add_argument('-a', '--alpha',type=str, help='Path to the file for A channel')
+    parser.add_argument('-o', '--output',type=str, help='Path to the output file')
+    parser.add_argument('-s', '--size',type=int, help='Size of the texture')
+    parser.description = 'Merge image files into one RGBA image, one for each channel'
     args = parser.parse_args()
-    if args.r != None and args.g != None and args.b != None and args.a != None and args.o != None and args.s != None:
-        merge_channels(args.s,[args.r,args.g,args.b,args.a],args.o)
+    if hasattr(args, 'r') and hasattr(args, 'g') and hasattr(args, 'b') and hasattr(args, 'a') and hasattr(args, 'o') and hasattr(args, 's'):
+        merge_channels(size=args.s,red=args.r,green=args.g,blue=args.b,alpha=args.a,save_filename=args.o)
     else:
         main()
-    
-    
-    
 
