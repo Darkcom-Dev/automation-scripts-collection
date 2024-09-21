@@ -2,9 +2,33 @@
 # -*- coding: utf-8 -*-
 import os
 import argparse
-
-
+import unicodedata
+from urllib.parse import quote
 import re
+
+def remove_accents(text):
+    """
+    Remove accents from a given text.
+
+    Parameters:
+        text (str): The input text.
+
+    Returns:
+        str: The text with accents removed.
+
+    >>> remove_accents("Canción")
+    'Cancion'
+    >>> remove_accents("niño")
+    'nino'
+    >>> remove_accents("ùòìèàǹçạïüü")
+    'uoieancaiuu'
+    >>> remove_accents("áéíóúüü")
+    'aeiouuu'
+    """
+    # Normaliza el texto para separar los caracteres con acentos de sus marcas diacríticas
+    normalized_text = unicodedata.normalize('NFD', text)
+    # Utiliza una expresión regular para eliminar las marcas diacríticas (acentos)
+    return re.sub(r'[\u0300-\u036f]', '', normalized_text)
 
 def clean_name(name):
     """
@@ -46,12 +70,16 @@ def clean_name(name):
     if name in forbidden_folders:
         name = name + '_is_not_allowed_in_windows'
 
+    name = name.replace('%20', '_')
     # Define los caracteres no permitidos
-    forbidden_chars = '<>:"/\\|?*+'
+    forbidden_chars = '<>:"/\\|?*+#%&{}=¨^~[]@\'` \t\n\r\f\v'
     # Reemplaza los caracteres no permitidos con un guion bajo
     for char in forbidden_chars:
         name = name.replace(char, '_')
 
+    # name = quote(name, safe=':/')
+    # Elimina los acentos
+    name = remove_accents(name)
     # Elimina los espacios al inicio y al final del nombre
     name = name.strip()
     # Elimina los espacios, guiones bajos y guiones antes de la extension
@@ -247,8 +275,8 @@ def rename_files_and_folders(directory):
 if __name__ == "__main__":
     import doctest
 
-    #doctest.run_docstring_examples(generate_new_name, globals(), verbose=True)
-     
+    doctest.run_docstring_examples(clean_name, globals(), verbose=True)
+    """ 
     # Especifica el directorio que deseas renombrar
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", help="Directorio que deseas renombrar")
@@ -258,7 +286,7 @@ if __name__ == "__main__":
         print(f"El directorio {args.directory} no existe.")
         exit(1)
     else:
-        rename_files_and_folders(args.directory)
+        rename_files_and_folders(args.directory) """
  
 """
 project_convention_renamer.py version 1.1
