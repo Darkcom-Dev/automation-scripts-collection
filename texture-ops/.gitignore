@@ -4,3 +4,5 @@ dist
 *.jpg
 *.png
 *.spec
+*.jpeg
+*.tiff
