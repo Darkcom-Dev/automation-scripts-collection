@@ -275,8 +275,8 @@ def rename_files_and_folders(directory):
 if __name__ == "__main__":
     import doctest
 
-    doctest.run_docstring_examples(clean_name, globals(), verbose=True)
-    """ 
+    # doctest.run_docstring_examples(clean_name, globals(), verbose=True)
+     
     # Especifica el directorio que deseas renombrar
     parser = argparse.ArgumentParser()
     parser.add_argument("directory", help="Directorio que deseas renombrar")
@@ -286,7 +286,7 @@ if __name__ == "__main__":
         print(f"El directorio {args.directory} no existe.")
         exit(1)
     else:
-        rename_files_and_folders(args.directory) """
+        rename_files_and_folders(args.directory)
  
 """
 project_convention_renamer.py version 1.1

@@ -5,14 +5,15 @@ from tkinter import ttk
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
 import argparse
+from pathlib import Path
 
-def pack_textures(size:int, routes, save_filename):
+def pack_textures(size:int, paths:list, save_filename):
     """
     Generate a packed texture image from a list of image routes.
 
     Args:
         size (int): The size of each individual texture image.
-        routes (list): A list of image routes. Each route represents the file path to an image.
+        paths (list): A list of image routes. Each route represents the file path to an image.
         save_filename (str): The file name under which the packed texture image will be saved.
 
     Returns:
@@ -29,18 +30,16 @@ def pack_textures(size:int, routes, save_filename):
         - The packed texture image will be displayed after it is saved.
 
     """
-
-    print('Message from pack textures')
-    
+    print()
     result = Image.new('RGBA',[size * 2, size * 2])
 
     positions = ([0,0],[size,0],[0,size],[size, size])
 
     for i in range(0,4):
-        if routes[i] == '':
+        if paths[i] == '':
             result.paste(Image.new('L',[size,size]),positions[i])
         else:
-            result.paste(Image.open(routes[i],'r').resize([size,size]), positions[i])
+            result.paste(Image.open(paths[i],'r').resize([size,size]), positions[i])
 
     result.save(save_filename,'png')
     result.show()
@@ -68,7 +67,7 @@ class App():
         instructions1 = ttk.Label(self.win,text='** Se creará una imagen blanca por cada ruta faltante')
         instructions1.grid(column= 0,row= 11, sticky='WE', columnspan=2)
 
-        filetypes = [('texture files',r'*.png *.tif'),('all files','*.*')]
+        filetypes = [('texture files',r'*.png *.tif *.jpg *.jpeg'),('all files','*.*')]
         # Canal R
 
         r_filename = tk.StringVar()
@@ -124,16 +123,20 @@ def main():
     application = App(root)
     root.mainloop()
 
-parser = argparse.ArgumentParser('Texture Atlas packer')
 
 if __name__ == '__main__':
-
-    parser.add_argument('--size',type=int)
-    parser.add_argument('--path',nargs='+',type=str)
-    parser.add_argument('--name',type=str)
+    parser = argparse.ArgumentParser('Texture Atlas packer')
+    parser.add_argument('-s', '--size', type=int, help='Size of the texture')
+    parser.add_argument('-tl', '--top-left', type=Path, help='Path to the top-left image')
+    parser.add_argument('-tr', '--top-right', type=Path, help='Path to the top-right image')
+    parser.add_argument('-bl', '--bottom-left', type=Path, help='Path to the bottom-left image')
+    parser.add_argument('-br', '--bottom-right', type=Path, help='Path to the bottom-right image')
+    parser.add_argument('-o', '--output', type=Path, help='Name of the new texture')
+    #
     args = parser.parse_args()
-    if args.size:
-        pack_textures(args.size,args.path,args.name)
+    if any([args.top_left, args.top_right, args.bottom_left, args.bottom_right, args.output]):
+        path_list = [args.top_left,args.top_right,args.bottom_left,args.bottom_right]
+        pack_textures(args.size,path_list,args.output)
     else:
         main()
     

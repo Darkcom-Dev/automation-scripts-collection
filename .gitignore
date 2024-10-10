@@ -1,9 +1,15 @@
-__pycache__/
 venv/
-Solo_archivos/
-"Solo Carpetas"/
+__pycache__/
+ChivoExpiatorio/
+chivo-expiatorio/
+src/
+res/
+*.spec
 *.png
 *.txt
 *.pdf
 *.ods
 *.nes
+*.pdf
+scrum_cuestionario.md
+*.png
