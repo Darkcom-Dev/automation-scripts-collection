@@ -2,7 +2,6 @@
 
 import os
 import subprocess
-import curses
 
 def create_project(project_name):
     os.mkdir(project_name)

@@ -27,8 +27,15 @@ def merge_channels(size=512, red='', green='', blue='', alpha='', save_filename=
 
     for channel in channels:
         if channel:
-            img = Image.open(channel)
-            images.append(img.getchannel(0).resize([size, size]))
+            if channel.lower() == 'white':
+                images.append(Image.new('L', [size, size], 'white'))
+            elif channel.lower() == 'black':
+                images.append(Image.new('L', [size, size], 'black'))
+            elif channel.lower() == 'gray' or channel.lower() == 'grey':
+                images.append(Image.new('L', [size, size], 'gray'))
+            else:
+                img = Image.open(channel)
+                images.append(img.getchannel(0).resize([size, size]))
         else:
             images.append(Image.new('L', [size, size], 'white'))
 

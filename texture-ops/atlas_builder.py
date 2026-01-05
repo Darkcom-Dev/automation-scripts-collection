@@ -37,9 +37,16 @@ def pack_textures(size:int, paths:list, save_filename):
 
     for i in range(0,4):
         if paths[i] == '':
-            result.paste(Image.new('L',[size,size]),positions[i])
+            result.paste(Image.new('L',[size,size],'white'),positions[i])
         else:
-            result.paste(Image.open(paths[i],'r').resize([size,size]), positions[i])
+            if paths[i] == 'white':
+                result.paste(Image.new('L',[size,size],'white'),positions[i])
+            elif paths[i] == 'black':
+                result.paste(Image.new('L',[size,size],'black'),positions[i])
+            elif paths[i] == 'gray' or paths[i] == 'grey':
+                result.paste(Image.new('L',[size,size],'gray'),positions[i])
+            else:
+                result.paste(Image.open(paths[i],'r').resize([size,size]), positions[i])
 
     result.save(save_filename,'png')
     result.show()
