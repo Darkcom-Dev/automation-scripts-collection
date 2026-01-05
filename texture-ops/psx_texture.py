@@ -9,7 +9,10 @@ from tkinter.filedialog import askopenfilename
 def convert_to_psx_texture(basecolor_path, ao_path, save_path, size):
     basecolor = Image.open(basecolor_path).convert('RGBA').resize((size, size))
     
-    ao = Image.open(ao_path).convert('L').resize((size, size))
+    if ao_path is None or ao_path == '' or ao_path.lower() == 'white':
+        ao = Image.new("L", (size, size), 255)
+    else:
+        ao = Image.open(ao_path).convert('L').resize((size, size))
         # Expandir AO a RGBA
     ao = Image.merge("RGBA", (ao, ao, ao, Image.new("L", ao.size, 255)))
     psx_texture = ImageChops.multiply(basecolor, ao)
