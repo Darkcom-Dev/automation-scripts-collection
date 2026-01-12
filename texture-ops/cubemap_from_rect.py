@@ -57,31 +57,29 @@ class App:
     def __init__(self, root):
         self.root = root
         self.root.title("Equirectangular to Cubemap Converter")
+        self.root.resizable(False, False)
         self.filetypes = [("Image files", "*.png *.jpg *.jpeg *.bmp"), ("HDR files", "*.hdr *.exr *.tif *.tiff"), ("All files", "*.*")]
         
-        self.label = tk.Label(root, text="Select an equirectangular image to convert:")
-        self.label.grid(row=0, column=0, padx=10, pady=10)
+        tk.Label(root, text="Equirectangular texture path:").grid(row=0, column=0, padx=10, pady=10, sticky="w")
 
         self.input_file_value = tk.StringVar()
         self.input_entry = tk.Entry(root, textvariable=self.input_file_value, width=50)
-        self.input_entry.grid(row=1, column=0, padx=10, pady=5)
+        self.input_entry.grid(row=1, column=0, padx=10, pady=5, sticky="w")
         self.input_examine_button = tk.Button(root, text="Browse", command=self.browse_input_file)
         self.input_examine_button.grid(row=1, column=1, padx=10, pady=5)
 
         self.output_file_value = tk.StringVar()
-        self.output_label = tk.Label(root, text="Output filename base:")
-        self.output_label.grid(row=2, column=0, padx=10, pady=5)
+        tk.Label(root, text="Output cubemap filename base:").grid(row=2, column=0, padx=10, pady=5, sticky="w")
         self.output_entry = tk.Entry(root, textvariable=self.output_file_value, width=50)
-        self.output_entry.grid(row=3, column=0, padx=10, pady=5)
+        self.output_entry.grid(row=3, column=0, padx=10, pady=5, sticky="w", columnspan=2)
 
         self.size_file_value = tk.IntVar(value=512)
-        self.size_label = tk.Label(root, text="Cubemap face size:")
-        self.size_label.grid(row=4, column=0, padx=10, pady=5)
+        tk.Label(root, text="Cubemap face size:").grid(row=4, column=0, padx=10, pady=5, sticky="w")
         self.size_entry = tk.Entry(root, textvariable=self.size_file_value, width=10)
-        self.size_entry.grid(row=5, column=0, padx=10, pady=5)
+        self.size_entry.grid(row=5, column=0, sticky="W", padx=10, pady=5)
 
         self.convert_button = tk.Button(root, text="Convert", command=self.convert_image)
-        self.convert_button.grid(row=6, column=0, padx=10, pady=10)
+        self.convert_button.grid(row=5, column=1, padx=10, pady=5, sticky='E')
 
     def browse_input_file(self):
         file_path = filedialog.askopenfilename(filetypes=self.filetypes)

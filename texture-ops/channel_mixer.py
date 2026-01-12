@@ -57,6 +57,7 @@ class App:
         self.win = window
         self.win.config(width=800, height=600)
         self.win.title('Texture Channel Mixer')
+        self.win.resizable(False, False)
 
         ttk.Label(self.win, text='Este programa combina 3 o 4 imágenes grises en un solo RGBA').grid(column=0, row=0, sticky='WE', columnspan=2)
         ttk.Label(self.win, text='** Se creará un canal blanco por cada ruta faltante').grid(column=0, row=11, sticky='WE', columnspan=2)

@@ -66,31 +66,33 @@ def gui_interface():
     # Create the tkinter window
     window = tk.Tk()
     window.title("RGBA Channel Splitter")
+    window.resizable(False, False)
 
+    Label(window, text="Split RGBA Texture in individual channel grayscale files").grid(row=0, column=0, columnspan=3, pady=10, sticky='W')
     # Labels and text entries
-    Label(window, text="Image path:").grid(row=0, column=0, padx=5, pady=5)
+    Label(window, text="Image path:").grid(row=1, column=0, padx=5, pady=5, sticky='E')
     entry_path = Entry(window, width=50)
-    entry_path.grid(row=0, column=1, padx=5, pady=5)
-    Button(window, text="Browse", command=select_image).grid(row=0, column=2, padx=5, pady=5)
+    entry_path.grid(row=1, column=1, padx=5, pady=5)
+    Button(window, text="Browse", command=select_image).grid(row=1, column=2, padx=5, pady=5)
 
-    Label(window, text="Red channel file name:").grid(row=1, column=0, padx=5, pady=5)
+    Label(window, text="Red channel file name:").grid(row=2, column=0, padx=5, pady=5, sticky='E')
     entry_red = Entry(window, width=50)
-    entry_red.grid(row=1, column=1, padx=5, pady=5)
+    entry_red.grid(row=2, column=1, padx=5, pady=5)
 
-    Label(window, text="Green channel file name:").grid(row=2, column=0, padx=5, pady=5)
+    Label(window, text="Green channel file name:").grid(row=3, column=0, padx=5, pady=5, sticky='E')
     entry_green = Entry(window, width=50)
-    entry_green.grid(row=2, column=1, padx=5, pady=5)
+    entry_green.grid(row=3, column=1, padx=5, pady=5)
 
-    Label(window, text="Blue channel file name:").grid(row=3, column=0, padx=5, pady=5)
+    Label(window, text="Blue channel file name:").grid(row=4, column=0, padx=5, pady=5, sticky='E')
     entry_blue = Entry(window, width=50)
-    entry_blue.grid(row=3, column=1, padx=5, pady=5)
+    entry_blue.grid(row=4, column=1, padx=5, pady=5)
 
-    Label(window, text="Alpha channel file name:").grid(row=4, column=0, padx=5, pady=5)
+    Label(window, text="Alpha channel file name:").grid(row=5, column=0, padx=5, pady=5, sticky='E')
     entry_alpha = Entry(window, width=50)
-    entry_alpha.grid(row=4, column=1, padx=5, pady=5)
+    entry_alpha.grid(row=5, column=1, padx=5, pady=5)
 
     # Button to process the image
-    Button(window, text="Split Channels", command=process_image).grid(row=5, column=1, padx=5, pady=10)
+    Button(window, text="Split Channels", command=process_image).grid(row=6, column=1, padx=5, pady=10)
 
     window.mainloop()
 
